@@ -1,0 +1,17 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+# sendmail wrapper:
+# * use ssmtp to send message
+# * add header to instruct mandrill to skip adding click/open tracking to http
+#   links in message body. see https://mandrill.zendesk.com/hc/en-us/articles/205582117-Using-SMTP-Headers-to-customize-your-messages#enable-open-and-click-tracking
+
+original_message=$(cat /dev/stdin)
+
+message_plus_extra_headers=$(cat <<END_HEREDOC
+{{ ssmtp_extra_headers }}
+$original_message
+END_HEREDOC
+     )
+
+echo -e "$message_plus_extra_headers" | /usr/sbin/ssmtp $@

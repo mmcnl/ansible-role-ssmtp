@@ -1,0 +1,48 @@
+---
+- name: install ssmtp
+  apt:
+    pkg:
+      - mailutils
+      - ssmtp
+    cache_valid_time: 86400 # 1 day
+    install_recommends: no
+
+- name: stop and disable nullmailer
+  systemd:
+    name: nullmailer
+    enabled: no
+    state: stopped
+  ignore_errors: yes
+
+- name: ensure nullmailer does not exist
+  apt:
+    pkg: nullmailer
+    state: absent
+    purge: yes
+
+- name: ensure custom nullmailer config is removed
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/nullmailer
+    - /etc/monit/conf.d/nullmailer
+
+- name: set up custom config dir
+  file:
+    path: /etc/ssmtp
+    state: directory
+    mode: 0755
+
+- name: install ssmtp config
+  template:
+    src: ssmtp.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+    group: mail
+    mode: 0640
+
+- name: create wrapper to use ssmtp instead of sendmail (and force mail to use specified from address)
+  template:
+    src: sendmail.j2
+    dest: /usr/sbin/sendmail
+    mode: 0755

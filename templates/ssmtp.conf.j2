@@ -1,0 +1,15 @@
+# -*- mode: conf -*-
+# {{ ansible_managed }}
+
+FromLineOverride=NO
+rewriteDomain={{ ssmtp_sender_domain }}
+
+mailhub={{ ssmtp_server }}:{{ ssmtp_port }}
+AuthUser={{ ssmtp_user }}
+AuthPass={{ ssmtp_password }}
+{% if not ssmtp_skip_tls %}
+UseSTARTTLS=YES
+UseTLS=YES
+{% endif %}
+
+Debug={{ 'YES' if ssmtp_debug else 'NO' }}

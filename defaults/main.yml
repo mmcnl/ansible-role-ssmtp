@@ -1,0 +1,5 @@
+---
+ssmtp_port: 587
+ssmtp_skip_tls: no
+ssmtp_debug: yes
+ssmtp_extra_headers:
