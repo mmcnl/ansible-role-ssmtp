@@ -9,7 +9,10 @@
 original_message=$(cat /dev/stdin)
 
 message_plus_extra_headers=$(cat <<END_HEREDOC
-{{ ssmtp_extra_headers }}
+{%- if ssmtp_extra_headers %}
+
+{{ ssmtp_extra_headers }}{% endif %}
+
 $original_message
 END_HEREDOC
      )
